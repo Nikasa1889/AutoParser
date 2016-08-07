@@ -10,12 +10,12 @@
   },
 
   "notificationTitle": {
-    "message": "Link Notification",
+    "message": "Parsing",
     "description": "Title of the click notification."
   },
 
   "notificationContent": {
-    "message": "You clicked $URL$.",
+    "message": "Prepare parsing $URL$.",
     "description": "Tells the user which link they clicked.",
     "placeholders": {
       "url" : {
