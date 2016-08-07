@@ -1,0 +1,27 @@
+{
+  "extensionName": {
+    "message": "AutoParser",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Parse specific types of web into JSON",
+    "description": "Description of the extension."
+  },
+
+  "notificationTitle": {
+    "message": "Link Notification",
+    "description": "Title of the click notification."
+  },
+
+  "notificationContent": {
+    "message": "You clicked $URL$.",
+    "description": "Tells the user which link they clicked.",
+    "placeholders": {
+      "url" : {
+        "content" : "$1",
+        "example" : "https://developer.mozilla.org"
+      }
+    }
+  }
+}
