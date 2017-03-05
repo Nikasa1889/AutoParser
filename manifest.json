@@ -15,8 +15,6 @@
     }
   },
 
-  "permissions": ["notifications", "storage"],
-
   "background": {
     "scripts": ["thirdParty/jquery-3.1.0.js", "background-script.js"]
   },
@@ -29,6 +27,8 @@
     }
   ],
   "default_locale": "en",
+  "permissions": ["notifications", "storage"],
+
   "browser_action": {
     "default_icon": {
      "32" : "icons/quicknote-32.png"

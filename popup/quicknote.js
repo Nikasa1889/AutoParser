@@ -75,7 +75,7 @@ function displayNote(title, body) {
   note.setAttribute('class','note');
 
   noteH.textContent = title;
-  notePara.textContent = body;
+  notePara.textContent = body.substring(0, 200);
   deleteBtn.setAttribute('class','delete');
   deleteBtn.textContent = 'Delete note';
   clearFix.setAttribute('class','clearfix');

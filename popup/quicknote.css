@@ -8,14 +8,14 @@ html {
   font-family: sans-serif;
   font-size: 10px;
   background: rgb(240,240,240);
-  height: 300px;
+  height: 500px;
   margin: 0;
 }
 
 body {
-  width: 300px;
+  width: 400px;
   background: rgb(240,240,240);
-  margin: 0 auto;
+  margin: 0 0;
   padding: 2px;
   height: inherit;
 }
@@ -23,7 +23,7 @@ body {
 .outer-wrapper {
   overflow: auto;
   width: 100%;
-  height: 300px;
+  height: inherit;
   background: rgb(240,240,240);
 }
 
@@ -101,6 +101,7 @@ textarea {
 
 .note {
   padding: 2px;
+  margin: 2px;
 }
 
 .delete {
