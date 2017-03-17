@@ -33,6 +33,6 @@ def filterProductWithImage (allProducts, verbose = True):
     for categoryName, products in allProducts:
         filteredProducts = [product for product in products if product["image"]]
         productWithImages.append([categoryName, filteredProducts])
-        print  '%22s : %d images' %(categoryName, len(filteredProducts))
+        if verbose:
+            print  '%22s : %d images' %(categoryName, len(filteredProducts))
     return productWithImages
-    
