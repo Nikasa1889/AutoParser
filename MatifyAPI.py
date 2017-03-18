@@ -2,6 +2,20 @@ from requests import Session
 from tabulate import tabulate
 import json
 SERVER_API_ENDPOINT = 'http://52.59.243.6:8000/'
+BRANDNAME_TO_STOREID = {'coop mega': 6, 
+                        'coop extra': 3 , 
+                        'coop marked': 8,
+                        'kiwi': 5,
+                        'meny': 7,
+                        'rema': 12,
+                        'matkroken': 11,
+                        'coop obs': 9, 
+                        'coop prix': 4,
+                        'joker': 10, 
+                        'bunnpris': 13, 
+                        'extra': 14, 
+                        'spar': 15
+                        }
 
 class MatifyAPI:
     def __init__(self, verbose = True):
@@ -49,16 +63,20 @@ class MatifyAPI:
             if self.verbose:
                 print  '%22s : %d images' %(categoryName, len(filteredProducts))
         return productWithImages
-
-    def uploadCatalog (self, catalogJson, catalogId, catalogName):
+    
+    def getStoreId (self, brandName):
+        return BRANDNAME_TO_STOREID[brandName];
+    
+    def uploadCatalog (self, catalogData, brandName, catalogFileName):
         token = 'b2h6ylyfn6pfvoz5wuvc'
         if self.verbose:
-            print "Uploading catalog " + catalogName 
-
-        response = self.session.post( SERVER_API_ENDPOINT + 'upload_products/'+str(catalogId),
+            print "Uploading catalog " + catalogFileName 
+            
+        storeId = self.getStoreId(brandName);
+        response = self.session.post( SERVER_API_ENDPOINT + 'upload_products/'+str(storeId),
                                   data = {"token":token, 
-                                          "file_name":catalogName, 
-                                          "data": catalogJson})
+                                          "file_name":catalogFileName, 
+                                          "data": catalogData})
         assert (int(response.status_code) == 200), \
                 "Error when uploading catalog. Response text: " + response.text
 

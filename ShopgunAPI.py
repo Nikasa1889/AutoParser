@@ -5,7 +5,7 @@ import io
 SERVER_API_ENDPOINT = 'https://api.etilbudsavis.dk/v2/'
 MATIFY_API_KEY = '00izwus560vpbdasf0o92m2fhaim4ynr'
 SELECTED_BRAND_NAME = ['coop mega', 'coop extra', 'coop marked', 'kiwi', 'meny', 'rema', 'matkroken', \
-                       'coop obs', 'coop prix','joker', 'bunnpris', 'extra', 'spar']
+                       'coop prix','joker', 'bunnpris', 'extra', 'spar']
 class ShopgunAPI:
     '''
         
