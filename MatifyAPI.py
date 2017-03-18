@@ -36,3 +36,17 @@ def filterProductWithImage (allProducts, verbose = True):
         if verbose:
             print  '%22s : %d images' %(categoryName, len(filteredProducts))
     return productWithImages
+
+def uploadCatalogs (session, catalogJson, catalogId, catalogName, verbose = True):
+    token = 'b2h6ylyfn6pfvoz5wuvc'
+    if verbose:
+        print "Uploading catalog " + catalogName 
+     
+    response = session.post( SERVER_ADDR + 'upload_products/'+str(catalogId)+'/',
+                      data = {"token":token, 
+                          "file_name":catalogName, 
+                          "data": catalogJson})
+    if verbose:
+        print response
+        print response.text
+    return response
