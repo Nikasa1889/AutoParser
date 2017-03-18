@@ -52,7 +52,10 @@ class MatifyDataset:
         self.nValidations = nValidations
         self.nTrains      = None
         self.verbose = verbose
+        
+        ##labels_to_names and nClasses will be infered automatically when convertToTfRecord or getSplit is called
         self.labels_to_names = None
+        self.nClasses = None
         
         self.SPLITS_NAMES = ['train', 'validation']
         self._FILE_PATTERN = 'matify_%s_*.tfrecord'
@@ -185,7 +188,7 @@ class MatifyDataset:
         labels_to_class_names = dict(zip(range(len(class_names)), class_names))
         dataset_utils.write_label_file(labels_to_class_names, self.datasetDir)
         self.labels_to_names = labels_to_class_names
-        
+        self.nClasses = len(labels_to_class_names)
         print('\nFinished converting the Matify dataset!')
     
     def getSplit (self, split_name, nValidations = None):
@@ -223,6 +226,8 @@ class MatifyDataset:
         labels_to_names = None
         if dataset_utils.has_labels(self.datasetDir):
             labels_to_names = dataset_utils.read_label_file(self.datasetDir)
+            self.labels_to_names = labels_to_names
+            self.nClasses = len(labels_to_names)
         else:
             raise ValueError("Can't find label file in the data directory: " + self.datasetDir);
             
