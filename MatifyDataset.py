@@ -9,6 +9,7 @@ import tensorflow as tf
 import math
 sys.path.append(os.path.abspath("/notebooks/AutoParser/squeezenet/models/slim/"))
 from datasets import dataset_utils
+slim = tf.contrib.slim
 
 class ImageReader(object):
     """Helper class that provides TensorFlow image coding utilities."""
@@ -37,17 +38,30 @@ class MatifyDataset:
          leastExamples: int, only category with more than leastExamples is downloaded
          nShards:       int, the number of tfrecords files that used to store the dataset
          nValidations:  int, number of validation examples
+         nTrainings     int, number of training examples. 
+                             If None, try to infer this number from total - nValidations. 
+                             total is number of images
          randomSeed:    int, make repeatable splitting between training and validation set
          verbose:       bool, printing the process or not'''
-    def __init__ (self, datasetDir = 'MatifyDataset/', leastExamples = 15, nShards = 1, 
-                  nValidations = 20, randomSeed = 0, verbose = False):
+    def __init__ (self, datasetDir = 'Matify/MatifyDataset/', leastExamples = 15, nShards = 1, 
+                  nValidations = 20, nTrains = None, randomSeed = 0, verbose = False):
         self.leastExamples = leastExamples
         self.datasetDir = datasetDir
         self.nShards = nShards
         self.randomSeed = randomSeed
         self.nValidations = nValidations
+        self.nTrains      = None
         self.verbose = verbose
+        self.labels_to_names = None
         
+        self.SPLITS_NAMES = ['train', 'validation']
+        self._FILE_PATTERN = 'matify_%s_*.tfrecord'
+        self._NUM_CLASSES = None
+        self._ITEMS_TO_DESCRIPTIONS = {
+            'image': 'A color image of varying size.',
+            'label': 'A single integer',
+        }
+
     def _download_all_images (self, productWithImages):
         for categoryName, products in productWithImages:
             categoryPath =  os.path.join(self.datasetDir,
@@ -98,7 +112,7 @@ class MatifyDataset:
           (integers).
         dataset_dir: The directory where the converted datasets are stored.
         """
-        assert split_name in ['train', 'validation']
+        assert split_name in self.SPLITS_NAMES
 
         num_per_shard = int(math.ceil(len(filenames) / float(self.nShards)))
 
@@ -130,6 +144,7 @@ class MatifyDataset:
 
         sys.stdout.write('\n')
         sys.stdout.flush()
+        
     def download (self):
         sess = Session()
         categories = MatifyAPI.getCategories(sess, verbose=self.verbose)
@@ -147,7 +162,10 @@ class MatifyDataset:
         #Download all images
         self._download_all_images (productWithImages)
 
-    def convertToTfrecord (self):
+    def convertToTfrecord (self, nValidations = None):
+        if not nValidations:
+            nValidations = self.nValidations
+        self.nValidations = nValidations
         #convert to Tfrecords
         photo_filenames, class_names = self._get_filenames_and_classes()
         class_names_to_ids = dict(zip(class_names, range(len(class_names))))
@@ -155,9 +173,10 @@ class MatifyDataset:
         # Divide into train and test:
         random.seed(self.randomSeed)
         random.shuffle(photo_filenames)
-        training_filenames = photo_filenames[self.nValidations:]
-        validation_filenames = photo_filenames[:self.nValidations]
-
+        training_filenames = photo_filenames[nValidations:]
+        validation_filenames = photo_filenames[:nValidations]
+        self.nTrains = len(photo_filenames) - nValidations
+        
         # First, convert the training and validation sets.
         self._convert_dataset('train', training_filenames, class_names_to_ids)
         self._convert_dataset('validation', validation_filenames, class_names_to_ids)
@@ -165,5 +184,53 @@ class MatifyDataset:
         # Finally, write the labels file:
         labels_to_class_names = dict(zip(range(len(class_names)), class_names))
         dataset_utils.write_label_file(labels_to_class_names, self.datasetDir)
-
+        self.labels_to_names = labels_to_class_names
+        
         print('\nFinished converting the Matify dataset!')
+    
+    def getSplit (self, split_name, nValidations = None):
+        if not nValidations:
+            if not self.nValidations:
+                raise ValueError("nValidations is not known");
+            else:
+                nValidations = self.nValidations
+                
+        if not self.nTrains:
+            photo_filenames, _ = self._get_filenames_and_classes()
+            self.nTrains = len(photo_filenames) - self.nValidations
+            
+        if split_name not in self.SPLITS_NAMES:
+            raise ValueError('split name %s was not recognized.' % split_name)
+        file_pattern = self._FILE_PATTERN
+        file_pattern = os.path.join(self.datasetDir, file_pattern % split_name)
+
+        reader = tf.TFRecordReader
+
+        keys_to_features = {
+              'image/encoded': tf.FixedLenFeature((), tf.string, default_value=''),
+              'image/format': tf.FixedLenFeature((), tf.string, default_value='jpg'),
+              'image/class/label': tf.FixedLenFeature(
+                  [], tf.int64, default_value=tf.zeros([], dtype=tf.int64)),
+          }
+
+        items_to_handlers = {
+          'image': slim.tfexample_decoder.Image(),
+          'label': slim.tfexample_decoder.Tensor('image/class/label'),
+        }
+
+        decoder = slim.tfexample_decoder.TFExampleDecoder(keys_to_features, items_to_handlers)
+
+        labels_to_names = None
+        if dataset_utils.has_labels(self.datasetDir):
+            labels_to_names = dataset_utils.read_label_file(self.datasetDir)
+        else:
+            raise ValueError("Can't find label file in the data directory: " + self.datasetDir);
+            
+        return slim.dataset.Dataset(
+          data_sources=file_pattern,
+          reader=reader,
+          decoder=decoder,
+          num_samples=self.nTrains, 
+          items_to_descriptions=self._ITEMS_TO_DESCRIPTIONS,
+          num_classes=len(labels_to_names),
+          labels_to_names=labels_to_names)
