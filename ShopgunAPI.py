@@ -22,7 +22,7 @@ class ShopgunAPI:
     def getToken(self):
         tokenResponse = self.session.post(SERVER_API_ENDPOINT + 'sessions?api_key=' + MATIFY_API_KEY)
         assert (int(tokenResponse.status_code) == 201), \
-                "Error when requesting token. Reponse text: " + tokenResponse.text
+                "Error when requesting token. Response text: " + tokenResponse.text
         
         token = (json.loads(tokenResponse.text))["token"]
         if not token:
@@ -36,7 +36,7 @@ class ShopgunAPI:
                                         '&limit=' + str(limit),
                                         headers=self.defaultHeaders)
         assert (int(listResponse.status_code) == 200), \
-                "Error when requesting all stores. Reponse text: " + listResponse.text
+                "Error when requesting all stores. Response text: " + listResponse.text
         
         stores = json.loads(listResponse.text)
         storeList = [[store['branding']['name'], store['id']] for store in stores]
@@ -51,7 +51,7 @@ class ShopgunAPI:
                                            '&r_lng=10.75&r_radius=700000&api_av=0.1.33&limit=100',
                                             headers=self.defaultHeaders)
         assert (int(catalogsResponse.status_code) == 200), \
-                "Error when requesting all catalogs. Reponse text: " + catalogsResponse.text
+                "Error when requesting all catalogs. Response text: " + catalogsResponse.text
         
         catalogs = json.loads(catalogsResponse.text)
         catalogList = [[catalog['branding']['name'], catalog['store_id'], catalog['id']] for catalog in catalogs]
@@ -82,7 +82,7 @@ class ShopgunAPI:
                                           '/hotspots?r_lat=59.95&r_lng=10.75&r_radius=700000&api_av=0.1.33',
                                            headers=self.defaultHeaders)
         assert (int(offersResponse.status_code) == 200), \
-                "Error when requesting catalog. Reponse text: " + offersResponse.text
+                "Error when requesting catalog. Response text: " + offersResponse.text
         
         offers = json.loads(offersResponse.text)
         if self.verbose:
@@ -95,7 +95,7 @@ class ShopgunAPI:
                                             '?r_lat=59.95&r_lng=10.75&r_radius=700000&api_av=0.1.33',
                                             headers=self.defaultHeaders)
         assert (int(offerDescResponse.status_code) == 200), \
-                "Error when requesting offer description. Reponse text: " + offerDescResponse.text
+                "Error when requesting offer description. Response text: " + offerDescResponse.text
         
         return json.loads(offerDescResponse.text.encode('utf-8'))
     
