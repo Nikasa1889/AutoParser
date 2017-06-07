@@ -77,8 +77,8 @@ class MatifyAPI:
                                   data = {"token":token, 
                                           "file_name":catalogFileName, 
                                           "data": catalogData})
-        assert (int(response.status_code) == 200), \
-                "Error when uploading catalog. Response text: " + response.text
+        #assert (int(response.status_code) == 200), \
+        #        "Error when uploading catalog. Response text: " + response.text
 
         if self.verbose:
             print response
