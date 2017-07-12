@@ -105,6 +105,10 @@ class ShopgunAPI:
         for offerId in offerIdList:
             offerDesc = self.getOfferDescription(offerId);
             offerDescList.append(offerDesc)
+        offerDict = {offer["heading"]:offer for offer in offerDescList}
+        offerDescList = list(offerDict) #Remove offers with duplicate heading
+        if self.verbose:
+            print "Number of offers after filtered duplicates: "+ str(len(offerDescList))
         return offerDescList
     
     def generateCatalogFileName(self, catalogBrand, catalogId, catalogRunFrom):
