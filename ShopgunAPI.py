@@ -105,10 +105,10 @@ class ShopgunAPI:
         for offerId in offerIdList:
             offerDesc = self.getOfferDescription(offerId);
             offerDescList.append(offerDesc)
-        print offerDescList
+        #print offerDescList
         offerDict = {offer["heading"]:offer for offer in offerDescList}
         offerDescList = offerDict.values() #Remove offers with duplicate heading
-        print offerDescList
+        #print offerDescList
         if self.verbose:
             print "Number of offers after filtered duplicates: "+ str(len(offerDescList))
         return offerDescList
