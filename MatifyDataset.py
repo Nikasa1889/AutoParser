@@ -2,13 +2,14 @@ import os
 import sys
 import urllib
 import random
-import MatifyAPI
+from MatifyAPI import MatifyAPI
 from requests import Session
 import io
 import tensorflow as tf
 import math
-sys.path.append(os.path.abspath("/notebooks/AutoParser/squeezenet/models/slim/"))
-from datasets import dataset_utils
+#sys.path.append(os.path.abspath("/notebooks/AutoParser/squeezenet/models/slim/"))
+import dataset_utils
+import json
 slim = tf.contrib.slim
 
 class ImageReader(object):
@@ -69,12 +70,15 @@ class MatifyDataset:
         for categoryName, products in productWithImages:
             categoryPath =  os.path.join(self.datasetDir,
                                       categoryName)
-            if len(products) >= self.leastExamples:
-                if not os.path.exists(categoryPath):
-                    os.makedirs(categoryPath)
-                for product in products:
-                    urllib.urlretrieve(product["image"], os.path.join(categoryPath, str(product["id"])+".jpg"))
-            
+            #if len(products) >= self.leastExamples:
+            if not os.path.exists(categoryPath):
+                os.makedirs(categoryPath)
+            for product in products:
+                if product["image"]:
+                    urllib.urlretrieve(product["image"], os.path.join(categoryPath, str(product["id"]) + ".jpg"))
+                    with open(os.path.join(categoryPath, str(product["id"]) + ".json"), 'w') as outfile:
+                        json.dump(product, outfile)
+
     def _get_filenames_and_classes(self):
         """Returns a list of filenames and inferred class names.
         Args:
@@ -149,21 +153,26 @@ class MatifyDataset:
         sys.stdout.flush()
         
     def download (self):
-        sess = Session()
-        categories = MatifyAPI.getCategories(sess, verbose=self.verbose)
-
+        matifyAPI = MatifyAPI(verbose=False)
+        categories = matifyAPI.getCategories()
         #Request products from all sub category
         allProducts = []
         for categoryId, categoryName, subCategories in categories:
-            products = MatifyAPI.getProducts (sess, categoryId, categoryName, verbose=self.verbose)
-            allProducts.append([categoryName, products])
+            #products = matifyAPI.getProducts (categoryId, categoryName)
+            #allProducts.append([categoryName, products])
             for subCategoryID, subCategoryName, _ in subCategories:
-                products = MatifyAPI.getProducts (sess, subCategoryID, subCategoryName, verbose=self.verbose)
-                allProducts.append([subCategoryName, products])
-        productWithImages = MatifyAPI.filterProductWithImage (allProducts, verbose=self.verbose)
+                try:
+                    supermarkets = matifyAPI.getProducts (subCategoryID, subCategoryName)
+                    print subCategoryName
+                    for supermarket in supermarkets:
+                        allProducts.append([subCategoryName, supermarket["products"]])
+                except Exception, e:
+                    print e
+                    continue
+        #productWithImages = matifyAPI.filterProductWithImage (allProducts, verbose=self.verbose)
 
         #Download all images
-        self._download_all_images (productWithImages)
+        self._download_all_images (allProducts)
 
     def convertToTfrecord (self, nValidations = None):
         if not nValidations:
