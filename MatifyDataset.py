@@ -10,6 +10,7 @@ import math
 #sys.path.append(os.path.abspath("/notebooks/AutoParser/squeezenet/models/slim/"))
 import dataset_utils
 import json
+import csv
 slim = tf.contrib.slim
 
 class ImageReader(object):
@@ -66,22 +67,33 @@ class MatifyDataset:
             'label': 'A single integer',
         }
 
-    def _download_all_images (self, productWithImages):
-        for categoryName, products in productWithImages:
-            categoryPath =  os.path.join(self.datasetDir,
-                                      categoryName)
-            #if len(products) >= self.leastExamples:
-            if not os.path.exists(categoryPath):
-                os.makedirs(categoryPath)
-            for product in products:
-                if product["image"]:
-                    try:
-                        urllib.urlretrieve(product["image"], os.path.join(categoryPath, str(product["id"]) + ".jpg"))
-                        with open(os.path.join(categoryPath, str(product["id"]) + ".json"), 'w') as outfile:
-                            json.dump(product, outfile)
-                    except Exception, e:
-                        print e
-                        continue
+    def _download_all_images (self, cat_products):
+        with open(os.path.join(self.datasetDir, 'train.csv'), 'wb') as csvfile:
+            csvwriter = csv.writer(csvfile, delimiter=';',
+                                   quotechar='|', quoting=csv.QUOTE_MINIMAL)
+            csvwriter.writerow(['category', 'image', 'name', 'description'])
+            for categoryName, products in cat_products:
+                categoryPath =  os.path.join(self.datasetDir,
+                                          categoryName)
+                #if len(products) >= self.leastExamples:
+                if not os.path.exists(categoryPath):
+                    os.makedirs(categoryPath)
+                for product in products:
+                    if product["image"]:
+                        try:
+                            image_path = os.path.join(categoryPath, str(product["id"]) + ".jpg")
+                            urllib.urlretrieve(product["image"], image_path)
+                            csvwriter.writerow([categoryName.encode('utf-8'), 
+                                                image_path.encode('utf-8'), 
+                                                product["name"].encode('utf-8'), 
+                                                product["description"].encode('utf-8')])
+                            csvfile.flush()
+                            print(image_path.encode('utf-8'))
+                            #with open(os.path.join(categoryPath, str(product["id"]) + ".json"), 'w') as outfile:
+                            #    json.dump(product, outfile)
+                        except Exception, e:
+                            print e
+                            continue
 
     def _get_filenames_and_classes(self):
         """Returns a list of filenames and inferred class names.
