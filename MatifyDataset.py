@@ -75,9 +75,13 @@ class MatifyDataset:
                 os.makedirs(categoryPath)
             for product in products:
                 if product["image"]:
-                    urllib.urlretrieve(product["image"], os.path.join(categoryPath, str(product["id"]) + ".jpg"))
-                    with open(os.path.join(categoryPath, str(product["id"]) + ".json"), 'w') as outfile:
-                        json.dump(product, outfile)
+                    try:
+                        urllib.urlretrieve(product["image"], os.path.join(categoryPath, str(product["id"]) + ".jpg"))
+                        with open(os.path.join(categoryPath, str(product["id"]) + ".json"), 'w') as outfile:
+                            json.dump(product, outfile)
+                    except Exception, e:
+                        print e
+                        continue
 
     def _get_filenames_and_classes(self):
         """Returns a list of filenames and inferred class names.
