@@ -1,7 +1,11 @@
 from requests import Session
 from tabulate import tabulate
 import json
-SERVER_API_ENDPOINT = 'http://52.59.243.6:8000/'
+if os.getenv('MATIFY_API_ENDPOINT'):
+    SERVER_API_ENDPOINT = os.getenv('MATIFY_API_ENDPOINT')
+else:
+    SERVER_API_ENDPOINT = 'http://52.59.243.6:8000/'
+
 BRANDNAME_TO_STOREID = {'coop mega': 6, 
                         'coop extra': 3 , 
                         'coop marked': 8,
