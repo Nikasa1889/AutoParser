@@ -16,9 +16,9 @@ matifyAPI = MatifyAPI()
 for catalogStore, catalogId, catalogRunFrom, catalogBrand in selectedCatalogList:
     offerDescList = shopgunAPI.getOfferDescriptionsOfCatalog(catalogId, catalogStore)
     JsonFileName = shopgunAPI.generateCatalogFileName(catalogBrand, catalogId, catalogRunFrom)
-    data = json.dumps(offerDescList, ensure_ascii=False)     
+    data = json.dumps(list(offerDescList), ensure_ascii=False)     
     #json_file.write(unicode(data))
     matifyAPI.uploadCatalog(brandName=catalogBrand, catalogData=data, catalogFileName=JsonFileName)
-    print "Done."
+    print("Done.")
 
 

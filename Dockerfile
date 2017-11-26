@@ -2,14 +2,15 @@ FROM python:3.6
 
 # RUN apk add --no-cache dcron
 RUN apt-get update && apt-get install -y cron
-COPY . /workspace
+COPY ./requirements.txt /workspace/
+WORKDIR /workspace
 RUN pip3 install -r /workspace/requirements.txt
 
-WORKDIR /workspace
+COPY ./*.py /workspace/
 
 RUN echo 'MAILTO="nikasa.1889@gmail.com,ttaique@gmail.com"\n\
 PYTHONIOENCODING=utf8\n\
-0 10 * * * /usr/bin/python3 /workspace/Parse.py\n\
+25 2 * * * /usr/local/bin/python3 /workspace/Parse.py\n\
 ' > /etc/cron.d/parse-cron
 
 RUN cat /etc/cron.d/parse-cron

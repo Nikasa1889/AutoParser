@@ -3,8 +3,8 @@ services:
   classify:
     build: .
     image: mtf-cron-parser
-    environment:
-      - MATIFY_API_ENDPOINT='http://server:8000'
+    #environment:
+    #  - MATIFY_API_ENDPOINT='http://server:8000/'
 
 networks:
   default:

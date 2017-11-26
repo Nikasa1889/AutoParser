@@ -41,8 +41,8 @@ class ShopgunAPI:
         stores = json.loads(listResponse.text)
         storeList = [[store['branding']['name'], store['id']] for store in stores]
         if self.verbose:
-            print "-----------------List 100 stores-----------------------------"
-            print tabulate(storeList, headers=['All Stores', 'Id'])
+            print("-----------------List 100 stores-----------------------------")
+            print(tabulate(storeList, headers=['All Stores', 'Id']))
         return storeList
     
     def getCatalogs(self, selectedBrandNames = SELECTED_BRAND_NAME):
@@ -56,7 +56,7 @@ class ShopgunAPI:
         catalogs = json.loads(catalogsResponse.text)
         catalogList = [[catalog['branding']['name'], catalog['store_id'], catalog['id']] for catalog in catalogs]
         if self.verbose:
-            print tabulate(catalogList, headers=['All Catalogs', 'Store Id', 'Id'])
+            print(tabulate(catalogList, headers=['All Catalogs', 'Store Id', 'Id']))
         #If selectedBrandNames == None then return all catalogs
         if not selectedBrandNames:
             return catalogList
@@ -69,14 +69,14 @@ class ShopgunAPI:
                                      if brandName in catalog['branding']['name'].lower())] 
                                for catalog in selectedCatalogs]
         if self.verbose:
-            print "\n---------------------------------"
-            print tabulate(selectedCatalogList, headers=['Selected Catalogs', 'Id', 'Run From', 'Brand'])
+            print("\n---------------------------------")
+            print(tabulate(selectedCatalogList, headers=['Selected Catalogs', 'Id', 'Run From', 'Brand']))
         return selectedCatalogList
     
     def getOfferIdsOfCatalog(self, catalogId, catalogName = ''):
         if self.verbose:
-            print "--------------------------------------------"
-            print "Requesting catalog "+catalogName+" with id "+catalogId+"..."
+            print("--------------------------------------------")
+            print("Requesting catalog "+catalogName+" with id "+catalogId+"...")
             
         offersResponse = self.session.get(SERVER_API_ENDPOINT + 'catalogs/'+catalogId+
                                           '/hotspots?r_lat=59.95&r_lng=10.75&r_radius=700000&api_av=0.1.33',
@@ -86,7 +86,7 @@ class ShopgunAPI:
         
         offers = json.loads(offersResponse.text)
         if self.verbose:
-            print "Number of offers: "+ str(len(offers))
+            print("Number of offers: "+ str(len(offers)))
         offerIdList = [offer['id'] for offer in offers]
         return offerIdList
         
@@ -110,7 +110,7 @@ class ShopgunAPI:
         offerDescList = offerDict.values() #Remove offers with duplicate heading
         #print offerDescList
         if self.verbose:
-            print "Number of offers after filtered duplicates: "+ str(len(offerDescList))
+            print("Number of offers after filtered duplicates: "+ str(len(offerDescList)))
         return offerDescList
     
     def generateCatalogFileName(self, catalogBrand, catalogId, catalogRunFrom):
