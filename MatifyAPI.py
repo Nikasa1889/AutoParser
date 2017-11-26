@@ -5,7 +5,7 @@ import os
 if os.getenv('MATIFY_API_ENDPOINT'):
     SERVER_API_ENDPOINT = os.getenv('MATIFY_API_ENDPOINT')
 else:
-    SERVER_API_ENDPOINT = 'http://52.59.243.6:8000/'
+    SERVER_API_ENDPOINT = 'http://matify.net:8000/'
 
 BRANDNAME_TO_STOREID = {'coop mega': 6, 
                         'coop extra': 3 , 
