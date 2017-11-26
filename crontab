@@ -1,5 +1,5 @@
 MAILTO="nikasa.1889@gmail.com,ttaique@gmail.com"
 PYTHONIOENCODING=utf8
-42 * * * * /usr/local/bin/python3 /workspace/Parse.py >> /var/log/cron.log 2>&1
+0 10 * * * /usr/local/bin/python3 /workspace/Parse.py >> /var/log/cron.log 2>&1
 # * * * * * echo "Hello world" >> /var/log/cron.log 2>&1
 
