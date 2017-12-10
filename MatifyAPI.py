@@ -5,7 +5,7 @@ import os
 if os.getenv('MATIFY_API_ENDPOINT'):
     SERVER_API_ENDPOINT = os.getenv('MATIFY_API_ENDPOINT')
 else:
-    SERVER_API_ENDPOINT = 'http://matify.net:8000/'
+    SERVER_API_ENDPOINT = 'https://matify.net/'
 
 BRANDNAME_TO_STOREID = {'coop mega': 6, 
                         'coop extra': 3 , 
@@ -30,7 +30,7 @@ class MatifyAPI:
         
     def getCategories (self):
         categoryResponse = self.session.get(SERVER_API_ENDPOINT + 'listCategories/', 
-                                       headers=self.defaultHeaders)
+                                       headers=self.defaultHeaders, verify=False)
         assert (int(categoryResponse.status_code) == 200), \
                 "Error when requesting all categories. Response text: " + categoryResponse.text
 
@@ -50,7 +50,7 @@ class MatifyAPI:
         productsResponse = self.session.get(SERVER_API_ENDPOINT + 'listProducts/?categoryId='+
                                            str(categoryId)+'&offset=0&len=200'+
                                            '&expired_after='+expired_after, 
-                                           headers=self.defaultHeaders)
+                                           headers=self.defaultHeaders, verify=False)
         assert (int(productsResponse.status_code) == 200), \
                 "Error when requesting all products of a catagory. Response text: " + productsResponse.text
 
@@ -81,7 +81,7 @@ class MatifyAPI:
         response = self.session.post( SERVER_API_ENDPOINT + 'upload_products/'+str(storeId),
                                   data = {"token":token, 
                                           "file_name":catalogFileName, 
-                                          "data": catalogData})
+                                          "data": catalogData}, verify = False)
         #assert (int(response.status_code) == 200), \
         #        "Error when uploading catalog. Response text: " + response.text
 

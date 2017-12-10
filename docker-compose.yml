@@ -5,7 +5,7 @@ services:
     restart: always
     image: mtf-cron-parser
     environment:
-      - MATIFY_API_ENDPOINT=http://server:80/
+      - MATIFY_API_ENDPOINT=https://matify.net/
 
 networks:
   default:
